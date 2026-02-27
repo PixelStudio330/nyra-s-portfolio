@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import { X, Music, Play, Pause, SkipForward, SkipBack, Disc, Heart, ListMusic, RotateCcw, Volume2 } from 'lucide-react';
+import { X, Music, Play, Pause, SkipForward, SkipBack, Disc, Heart, ListMusic, RotateCcw, Volume2, ArrowRight } from 'lucide-react';
 
 const tracks = [
   { id: 1, title: "Touch", artist: "KATSEYE", src: "/musics/touch.mp4" },
@@ -28,28 +28,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [showLibrary, setShowLibrary] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   
-  // 🎚️ Audio Context Refs for Boosting
   const audioContextRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
   const currentTrack = tracks[trackIndex];
 
-  // Initialize Volume Booster
   useEffect(() => {
     if (audioRef.current && !audioContextRef.current) {
-      // Create the "Amplifier" setup
       const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
       const ctx = new AudioContextClass();
       const gainNode = ctx.createGain();
       const source = ctx.createMediaElementSource(audioRef.current);
-
-      // Boost volume by 2.5x (Adjust this number if it's still too quiet!)
       gainNode.gain.value = 2.5; 
-
       source.connect(gainNode);
       gainNode.connect(ctx.destination);
-
       audioContextRef.current = ctx;
       gainNodeRef.current = gainNode;
       sourceRef.current = source;
@@ -58,7 +51,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     if (audioRef.current && isPlaying) {
-      // Resume context (browsers block audio until a click happens)
       audioContextRef.current?.resume();
       audioRef.current.play().catch(() => setIsPlaying(false));
     }
@@ -66,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const togglePlay = () => {
     if (audioRef.current && currentTrack.src) {
-      audioContextRef.current?.resume(); // Ensure booster is active
+      audioContextRef.current?.resume();
       if (isPlaying) {
         audioRef.current.pause();
       } else {
@@ -137,7 +129,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             ref={audioRef} 
             key={currentTrack.id}
             src={currentTrack.src} 
-            crossOrigin="anonymous" // Needed for the booster to work!
+            crossOrigin="anonymous"
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
             onEnded={() => setTrackIndex((prev) => (prev + 1) % tracks.length)}
@@ -191,14 +183,39 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           
           <div className="bg-[#fffdf5] border-[3px] border-[#8b5a2b] rounded-2xl p-3 shadow-[6px_6px_0px_0px_#8b5a2b] flex items-center gap-4 relative group">
             
+            {/* 🏷️ THE INDICATING TAG */}
+            <AnimatePresence>
+              {!showLibrary && (
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ 
+                    opacity: 1, 
+                    x: 0,
+                    y: [0, -4, 0] 
+                  }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ y: { repeat: Infinity, duration: 2, ease: "easeInOut" } }}
+                  className="absolute -top-12 -left-16 flex flex-col items-center"
+                >
+                  <div className="bg-[#ffd166] text-[#8b5a2b] text-[10px] font-black px-3 py-1.5 rounded-lg border-[3px] border-[#8b5a2b] shadow-sm whitespace-nowrap rotate-[-10deg]">
+                    CLICK FOR PLAYLIST!
+                  </div>
+                  {/* Small arrow tail */}
+                  <div className="w-3 h-3 bg-[#ffd166] border-r-[3px] border-b-[3px] border-[#8b5a2b] rotate-45 -mt-1 ml-6" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <button 
                 onClick={() => setShowLibrary(!showLibrary)}
                 className={`absolute -top-3 -left-3 p-2.5 rounded-full border-[3px] border-[#8b5a2b] shadow-md z-20 transition-all hover:scale-110 active:scale-95 pointer-events-auto ${showLibrary ? 'bg-[#c45a5a] text-white' : 'bg-[#ffd166] text-[#8b5a2b]'}`}
               >
                 <ListMusic size={16} strokeWidth={3} />
+                {!showLibrary && (
+                  <span className="absolute inset-0 rounded-full bg-[#ffd166] animate-ping opacity-30" />
+                )}
             </button>
 
-            {/* Volume Boost Indicator Icon */}
             <div className="absolute -bottom-2 -right-2 bg-[#90be6d] text-white p-1 rounded-full border-2 border-[#fffdf5] shadow-sm">
               <Volume2 size={10} />
             </div>
