@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* --- ☀️ LIGHT MODE (Mint Chocolate / "Sweet Decay") --- */
+  /* Using the off-white #F6F3EE for a clean but 'medical' feel */
+  --background: #F6F3EE; 
+  --foreground: #5B2D29; /* Deep chocolate brown */
+
+  /* Brand Colors - From the Ice Cream Image */
+  --color-mint-chip: #96e3c0;
+  --color-choco-dark: #5B2D29;
+  --color-cream-base: #F6F3EE;
+  --color-faded-teal: #8BA8A1; 
+}
+
+/* This handles the manual "Dark Mode" toggle */
+[data-theme='dark'] {
+  /* --- 🌙 DARK MODE (Retro Forest / The Apple Woods) --- */
+  /* Using the deep olive #444D3A from the flower/apple inspo */
+  --background: #444D3A; 
+  --foreground: #EFD6B8;
+
+  /* Brand Colors - From the Wallace & Gromit / Flower inspo */
+  --color-retro-olive: #444D3A;
+  --color-vintage-apple: #836044;
+  --color-mustard-flower: #C1C35E;
+  --color-blood-apple: #8B2E34;
+  --color-cream-decay: #EFD6B8;
+}
+
+/* Respects System Settings */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --background: #444D3A;
+    --foreground: #EFD6B8;
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 20s linear infinite;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  
+  /* St4rLigh7 Palette Mapping */
+  --color-mint-chip: var(--color-mint-chip);
+  --color-choco-dark: var(--color-choco-dark);
+  --color-cream-base: var(--color-cream-base);
+  --color-faded-teal: var(--color-faded-teal);
+  
+  --color-retro-olive: var(--color-retro-olive);
+  --color-mustard-flower: var(--color-mustard-flower);
+  --color-blood-apple: var(--color-blood-apple);
+  --color-cream-decay: var(--color-cream-decay);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Courier New feels like a classified document; very weirdcore. */
+  font-family: 'Courier New', Courier, monospace; 
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s ease;
+  min-height: 100vh;
+  /* Using a fine pinstripe/noise texture to make the flat colors feel 'off' */
+  background-image: url("https://www.transparenttextures.com/patterns/pinstriped-suit.png");
+  background-attachment: fixed;
+}
+
+/* Custom Selection color to match the weird vibe */
+::selection {
+  background: var(--color-mint-chip);
+  color: var(--color-choco-dark);
+}
+
+/* Custom Scrollbar for the Scrapbook */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #c45a5a; /* Your Red color */
+  border-radius: 10px;
+  border: 2px solid #fffdf5; /* Adds a little gap around the thumb */
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #c45a5a transparent;
 }
