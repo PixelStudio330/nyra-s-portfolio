@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import { X, Music, Play, Pause, SkipForward, SkipBack, Disc, Heart, ListMusic, RotateCcw, Volume2, ArrowRight } from 'lucide-react';
+import SparkleTrail from './components/SparkleTrail'; // 🪄 Already imported!
+import { X, Music, Play, Pause, SkipForward, SkipBack, Disc, Heart, ListMusic, RotateCcw, Volume2 } from 'lucide-react';
 
 const tracks = [
   { id: 1, title: "Touch", artist: "KATSEYE", src: "/musics/touch.mp4" },
@@ -30,7 +31,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
   const currentTrack = tracks[trackIndex];
 
@@ -45,7 +45,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       gainNode.connect(ctx.destination);
       audioContextRef.current = ctx;
       gainNodeRef.current = gainNode;
-      sourceRef.current = source;
     }
   }, []);
 
@@ -86,8 +85,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#fdfcf0] pt-12 pb-20 px-4 md:px-8 font-serif selection:bg-[#ff9a9e] relative text-[#83B2DE] overflow-x-hidden">
+      <body className="min-h-screen bg-[#fdfcf0] pt-12 pb-20 px-4 md:px-8 font-serif selection:bg-[#ff9a9e] relative text-[#83B2DE] overflow-x-hidden cursor-none">
         
+        {/* ✨ SPARKLE TRAIL: Placed here to follow everywhere */}
+        <SparkleTrail />
+
         <div className="fixed inset-0 pointer-events-none z-0" 
           style={{ 
             backgroundColor: '#fdfcf0',
@@ -183,16 +185,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           
           <div className="bg-[#fffdf5] border-[3px] border-[#8b5a2b] rounded-2xl p-3 shadow-[6px_6px_0px_0px_#8b5a2b] flex items-center gap-4 relative group">
             
-            {/* 🏷️ THE INDICATING TAG */}
             <AnimatePresence>
               {!showLibrary && (
                 <motion.div 
                   initial={{ opacity: 0, x: 20 }}
-                  animate={{ 
-                    opacity: 1, 
-                    x: 0,
-                    y: [0, -4, 0] 
-                  }}
+                  animate={{ opacity: 1, x: 0, y: [0, -4, 0] }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ y: { repeat: Infinity, duration: 2, ease: "easeInOut" } }}
                   className="absolute -top-12 -left-16 flex flex-col items-center"
@@ -200,7 +197,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <div className="bg-[#ffd166] text-[#8b5a2b] text-[10px] font-black px-3 py-1.5 rounded-lg border-[3px] border-[#8b5a2b] shadow-sm whitespace-nowrap rotate-[-10deg]">
                     CLICK FOR PLAYLIST!
                   </div>
-                  {/* Small arrow tail */}
                   <div className="w-3 h-3 bg-[#ffd166] border-r-[3px] border-b-[3px] border-[#8b5a2b] rotate-45 -mt-1 ml-6" />
                 </motion.div>
               )}
